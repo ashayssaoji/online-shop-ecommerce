@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
-import com.jsp.ecommerce.dao.CustomerDao;
-import com.jsp.ecommerce.dao.ProductDao;
+import com.jsp.ecommerce.dao.CustomerDaoImpl;
+import com.jsp.ecommerce.dao.ProductDaoImpl;
 import com.jsp.ecommerce.helper.AES;
 import com.jsp.ecommerce.helper.EmailLogic;
 import com.jsp.ecommerce.model.Customer;
@@ -31,10 +31,10 @@ import jakarta.servlet.http.HttpSession;
 @Service
 public class CustomerService {
 	@Autowired
-	CustomerDao customerDao;
+	CustomerDaoImpl customerDaoImpl;
 
 	@Autowired
-	ProductDao productDao;
+	ProductDaoImpl productDaoImpl;
 
 	@Autowired
 	EmailLogic emailLogic;
@@ -47,7 +47,7 @@ public class CustomerService {
 
 	public String signup(Customer customer, ModelMap map) {
 		// to check Email and Mobile is Unique
-		List<Customer> exCustomers = customerDao.findByEmailOrMobile(customer.getEmail(), customer.getMobile());
+		List<Customer> exCustomers = customerDaoImpl.findByEmailOrMobile(customer.getEmail(), customer.getMobile());
 		if (!exCustomers.isEmpty()) {
 			map.put("fail", "Account Already Exists");
 			return "Signup";
@@ -57,7 +57,7 @@ public class CustomerService {
 			customer.setOtp(otp);
 			// Encrypting password
 			customer.setPassword(AES.encrypt(customer.getPassword(), "123"));
-			customerDao.save(customer);
+			customerDaoImpl.save(customer);
 			// Send OTP to email
 			emailLogic.sendOtp(customer);
 			// Carrying id
@@ -67,10 +67,10 @@ public class CustomerService {
 	}
 
 	public String verifyOtp(int id, int otp, ModelMap map) {
-		Customer customer = customerDao.findById(id);
+		Customer customer = customerDaoImpl.findById(id);
 		if (customer.getOtp() == otp) {
 			customer.setVerified(true);
-			customerDao.update(customer);
+			customerDaoImpl.update(customer);
 			map.put("pass", "Account Created Succesfully");
 			return "Login.html";
 		} else {
@@ -94,7 +94,7 @@ public class CustomerService {
 				email = emph;
 			}
 
-			List<Customer> customers = customerDao.findByEmailOrMobile(email, mobile);
+			List<Customer> customers = customerDaoImpl.findByEmailOrMobile(email, mobile);
 			if (customers.isEmpty()) {
 				map.put("fail", "Invalid Email or Mobile");
 				return "Login.html";
@@ -108,7 +108,7 @@ public class CustomerService {
 					} else {
 						int otp = new Random().nextInt(100000, 999999);
 						customer.setOtp(otp);
-						customerDao.save(customer);
+						customerDaoImpl.save(customer);
 						// Send OTP to email
 						emailLogic.sendOtp(customer);
 						// Carrying id
@@ -125,7 +125,7 @@ public class CustomerService {
 	}
 
 	public String fetchProducts(ModelMap map, Customer customer) {
-		List<Product> products = productDao.fetchDisplayProducts();
+		List<Product> products = productDaoImpl.fetchDisplayProducts();
 		if (products.isEmpty()) {
 			map.put("fail", "No Products Present");
 			return "CustomerHome";
@@ -143,7 +143,7 @@ public class CustomerService {
 	}
 
 	public String addToCart(Customer customer, int id, ModelMap map, HttpSession session) {
-		Product product = productDao.findById(id);
+		Product product = productDaoImpl.findById(id);
 
 		ShoppingCart cart = customer.getCart();
 		if (cart == null)
@@ -178,10 +178,10 @@ public class CustomerService {
 				cart.setItems(items);
 				cart.setTotalAmount(cart.getItems().stream().mapToDouble(x -> x.getPrice()).sum());
 				customer.setCart(cart);
-				customerDao.save(customer);
+				customerDaoImpl.save(customer);
 				// updating stock
 				product.setStock(product.getStock() - 1);
-				productDao.save(product);
+				productDaoImpl.save(product);
 				session.setAttribute("customer", customer);
 				map.put("pass", "Product Added to Cart");
 				return fetchProducts(map, customer);
@@ -207,7 +207,7 @@ public class CustomerService {
 	}
 
 	public String removeFromCart(Customer customer, int id, ModelMap map, HttpSession session) {
-		Product product = productDao.findById(id);
+		Product product = productDaoImpl.findById(id);
 
 		ShoppingCart cart = customer.getCart();
 		if (cart == null) {
@@ -240,14 +240,14 @@ public class CustomerService {
 				cart.setItems(items);
 				cart.setTotalAmount(cart.getItems().stream().mapToDouble(x -> x.getPrice()).sum());
 				customer.setCart(cart);
-				customerDao.save(customer);
+				customerDaoImpl.save(customer);
 
 				// updating stock
 				product.setStock(product.getStock() + 1);
-				productDao.save(product);
+				productDaoImpl.save(product);
 
 				if (item != null && item.getQuantity() == 1)
-					productDao.deleteItem(item);
+					productDaoImpl.deleteItem(item);
 
 				session.setAttribute("customer", customer);
 				map.put("pass", "Product Removed from Cart");
@@ -300,7 +300,7 @@ public class CustomerService {
 		orderRepository.save(order);
 
 		customer.getCart().setItems(null);
-		customerDao.save(customer);
+		customerDaoImpl.save(customer);
 
 		map.put("pass", "Payment Complete");
 		return "CustomerHome";
