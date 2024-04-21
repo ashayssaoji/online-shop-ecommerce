@@ -1,4 +1,6 @@
-package com.jsp.ecommerce.dto;
+package com.jsp.ecommerce.model;
+
+import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -9,14 +11,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 
+
 @Entity
-public class Item {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-	private String name;
-	private String category;
-	private double price;
+public class Product {
 	public int getId() {
 		return id;
 	}
@@ -49,12 +46,12 @@ public class Item {
 		this.price = price;
 	}
 
-	public int getQuantity() {
-		return quantity;
+	public int getStock() {
+		return stock;
 	}
 
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
+	public void setStock(int stock) {
+		this.stock = stock;
 	}
 
 	public byte[] getPicture() {
@@ -65,14 +62,44 @@ public class Item {
 		this.picture = picture;
 	}
 
-	private int quantity;
+	public boolean isDisplay() {
+		return display;
+	}
+
+	public void setDisplay(boolean display) {
+		this.display = display;
+	}
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+	private String name;
+	private String category;
+	private double price;
+	private int stock;
 	
 	@Lob
 	@Column(columnDefinition = "MEDIUMBLOB")
 	private byte[] picture;
+	private boolean display;
 	
 	public String generateBase64Image()
 	{
 	    return Base64.encodeBase64String(this.getPicture());
+	}
+	
+	public int getQuantity(List<Item> items)
+	{
+		int quantity=0;
+		if(items==null)
+			return quantity;
+		else {
+		for(Item item:items)
+		{
+			if(this.name.equals(item.getName()))
+				quantity=item.getQuantity();
+		}
+		return quantity;
+		}
 	}
 }

@@ -9,7 +9,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.jsp.ecommerce.dao.ProductDao;
-import com.jsp.ecommerce.dto.Product;
+import com.jsp.ecommerce.model.Product;
 
 @Service
 public class AdminService {

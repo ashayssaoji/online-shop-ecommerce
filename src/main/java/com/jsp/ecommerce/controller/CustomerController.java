@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.jsp.ecommerce.dto.Customer;
+import com.jsp.ecommerce.model.Customer;
 import com.jsp.ecommerce.service.CustomerService;
 import com.razorpay.RazorpayException;
 

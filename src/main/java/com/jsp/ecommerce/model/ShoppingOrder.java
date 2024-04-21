@@ -1,4 +1,4 @@
-package com.jsp.ecommerce.dto;
+package com.jsp.ecommerce.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

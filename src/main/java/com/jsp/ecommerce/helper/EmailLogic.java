@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.jsp.ecommerce.dto.Customer;
+import com.jsp.ecommerce.model.Customer;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

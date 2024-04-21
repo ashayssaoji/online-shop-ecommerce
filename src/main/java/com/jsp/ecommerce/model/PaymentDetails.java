@@ -1,4 +1,4 @@
-package com.jsp.ecommerce.dto;
+package com.jsp.ecommerce.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
